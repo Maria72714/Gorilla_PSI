@@ -1,2 +1,2 @@
-# Matec_PSI
-Repositório destinado ao Projeto Matec, da disciplina de PSI
+# Gorilla
+Repositório destinado ao Projeto Gorilla, da disciplina de PSI
