@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gorilla Suplementos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+    <div class="container">
+
+        <img src="{{ url_for('static',  filename='imagens/bralogo.png') }}" alt="Logo Gorilla Suplementos" class="logo">
+
+        <h1>GORILLA SUPLEMENTOS</h1>
+        <p class="slogan">Força, foco e performance</p>
+
+        
+        <nav>
+            
+            <a href="{{ url_for('cadastro') }}">Cadastrar-se</a>
+            <a href="{{ url_for('login') }}">Login</a>
+            
+        </nav>
+    </div>
+</body>
+</html>
