@@ -117,3 +117,11 @@ header {
 .prod-1 .btn:hover {
     background-color: #6ea111;
 }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+    color: #777;
+    background-color: #121212;
+  }

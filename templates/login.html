@@ -1,21 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - GORILLA</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
-</head>
-<body>
-    <header>
-        <div class="logo">GORILLA<span>.</span></div>
-        <nav class="navbar">
-            <a href="{{ url_for('cadastro') }}">Cadastro</a>
-            
-        </nav>
-    </header>
-    <p style="color:green; margin-top:50px; text-align:center;">Se a conta estar cadatrada, {{user_name}}! Agora é so logar! 👇 </p>
+
+
+{%extends 'base.html'%}
+{%block title%}
+    Login
+{%endblock%}
+
+{% block conteudo%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+ <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
+
+
+         <p style="color:green; margin-top:50px; text-align:center;">Se a conta estar cadatrada, {{user_name}}! Agora é so logar! 👇 </p>
    
     <div class="container">
         <div class="main">
@@ -33,7 +28,6 @@
         </div>
     </div>
 
-   
 
-</body>
-</html>
+
+{%endblock%}

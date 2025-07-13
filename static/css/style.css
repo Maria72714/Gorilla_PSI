@@ -1,0 +1,114 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #0f0f0f;
+    color: white;
+  }
+  
+
+
+  .btn-logout {
+ 
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  
+  .logo {
+    font-family: 'Anton', sans-serif;
+    font-size: 2rem;
+    color: white;
+  }
+  
+  .logo span {
+    color: #84cc16;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid #84cc16;
+    color: #84cc16;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+  }
+  
+  .btn:hover {
+    background: #84cc16;
+    color: black;
+  }
+  
+  .btn-primary {
+    margin-top: 20px;
+    background: #84cc16;
+    color: black;
+    border: none;
+  }
+  
+  .hero {
+    text-align: center;
+    padding: 100px 20px 60px;
+  }
+  
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-family: 'Anton', sans-serif;
+  }
+  
+  .hero span {
+    color: #84cc16;
+  }
+  
+  .hero p {
+    font-size: 1.2rem;
+    color: #ccc;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 60px 20px;
+    background-color: #1a1a1a;
+  }
+  
+  .card {
+    background-color: #262626;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 300px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(132, 204, 22, 0.2);
+  }
+  
+  .card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+  
+  .card p {
+  
+  color: #ddd; /* Ou até branco, se preferir */
+}
+
+  
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9rem;
+    color: #777;
+    background-color: #121212;
+  }
+  

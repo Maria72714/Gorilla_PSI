@@ -47,7 +47,7 @@ def login():
     
         if nome in users and check_password_hash(users[nome], senha):
             session['user_name'] = nome
-            response = make_response(redirect(url_for('base')))
+            response = make_response(redirect(url_for('produto')))
             response.set_cookie('nome', nome, 7*24*60*60)
             return response
         else: 
@@ -99,20 +99,6 @@ def carrinho():
 
     # Passa lista de itens e total para o template
     return render_template('carrinho.html',carrinho=carrinho_produtos,total=total)
-
-
-@app.route('/base')
-def base():
-    nome = session.get('user_name')
-    return render_template('base.html', user_name = nome)
-
-# @app.route('/get')
-# def get_session():
-#     if session.get('user_name'):
-#         usuario = session.get('user_name')  # ou session['usuario'], se tiver certeza que existe
-#         return f'Usuário na sessão: {usuario}'
-#     else:
-#         return 'Não há nenhumusuário logado'
 
 
 

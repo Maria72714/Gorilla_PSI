@@ -1,26 +1,37 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gorilla Suplementos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+{%extends 'base.html'%}
+
+{%block title%}
+    Página Inicial
+{%endblock%}
+
+{% block conteudo%}
+
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
+
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
 </head>
 <body>
-    <div class="container">
-
-        <img src="{{ url_for('static',  filename='imagens/bralogo.png') }}" alt="Logo Gorilla Suplementos" class="logo">
-
-        <h1>GORILLA SUPLEMENTOS</h1>
-        <p class="slogan">Força, foco e performance</p>
-
-        
-        <nav>
-            
-            <a href="{{ url_for('cadastro') }}">Cadastrar-se</a>
-            <a href="{{ url_for('login') }}">Login</a>
-            
-        </nav>
+<section class="hero">
+    <h1>Força de verdade começa com <span>GORILLA</span></h1>
+    <p>Suplementos de alta performance para quem não aceita limites.</p>
+    <br>
+    <a href="{{url_for('produto')}}" class="btn btn-primary">Comprar agora</a>
+</section>
+    
+<section class="cards">
+    <div class="card">
+        <h2>💪 Suplementos Premium</h2>
+        <p>Proteína, creatina, pré-treino e mais com máxima qualidade.</p>
     </div>
-</body>
-</html>
+    <div class="card">
+        <h2>✅ Testado e Aprovado</h2>
+        <p>Produtos certificados por profissionais da área esportiva.</p>
+    </div>
+    <div class="card">
+        <h2>🛒 Compra Segura</h2>
+        <p>Entregamos para todo o Brasil com segurança e agilidade.</p>
+    </div>
+    </section>
+    
+{%endblock%}

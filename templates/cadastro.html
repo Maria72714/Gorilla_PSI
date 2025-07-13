@@ -1,20 +1,15 @@
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - GORILLA</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='cadastro.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
-</head>
-<body>
-    <header>
-        <div class="logo">GORILLA<span>.</span></div>
-        <nav class="navbar">
+{%extends 'base.html'%}
+{%block title%}
+    Sessão Produtos
+{%endblock%}
 
-        </nav>
-    </header>
+{% block conteudo%}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+ <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
+
+
+         </header>
     {%if login%}
         <p> deu certo</p>
 
@@ -39,5 +34,4 @@
     </div>
 
 
-</body>
-</html>
+{%endblock%}

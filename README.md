@@ -31,8 +31,8 @@ Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de
 - 
 
 ### 🧑‍💻 Maria Luiza
-- 
-- 
+- Parte da Estruturação do Back-end e Front-End
+- Tratamento de Erros
 
 
 ---
