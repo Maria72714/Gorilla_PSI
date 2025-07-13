@@ -1,6 +1,6 @@
 # 🦍 Projeto Gorilla
 
-Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de **PSI (Programação de Sistemas de Informação)**.
+Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de **PSI (Programação de Sistemas para Internet)**.
 
 ---
 
@@ -27,7 +27,7 @@ Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de
 - 
 
 ### 🧑‍💻 Lucas
-- 
+- Integração com o banco
 - 
 
 ### 🧑‍💻 Maria Luiza
