@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carrinho de Compras</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='carrinho.css') }}">
+</head>
+<body>
+
+  <h1>Carrinho de Compras</h1>
+
+  {% if carrinho %}
+    <ul>
+      {% for item in carrinho %}
+        <li>
+          {{ item.nome }} — R${{ item.preco }} x {{ item.quantidade }} = R${{ item.subtotal }}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <p><strong>Total: R${{ total }}</strong></p>
+  {% else %}
+    <p>Seu carrinho está vazio.</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('produto') }}">← Voltar aos produtos</a></p>
+
+</body>
+</html>

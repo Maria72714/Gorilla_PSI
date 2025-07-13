@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessão Produtos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='produto.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+  <a href="{{ url_for('base') }}">GORILLA<span>.</span></a>
+</div>
+    <nav class="navbar">
+        <a href="/base">Home</a>
+        <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
+        <a href="{{ url_for('carrinho') }}">Carrinho</a>
+
+    </nav>
+</header>
+
+        <div class="container">
+            <div class="main">
+                <div class="boxs">
+
+                {% for p in produtos %}
+        <div class="box-1">
+            <div class="img">
+                <img src="{{ url_for('static', filename=p.imagem) }}" alt="{{ p.nome }}">
+            </div>
+            <div class="prod-1">
+                <h2>{{ p.nome }}</h2>
+                <h3>R${{ p.preco }}</h3>
+                <!-- Aqui é onde você deve colocar o link -->
+                <a href="{{ url_for('adicionar_ao_carrinho', id_produto=p.id) }}" class="btn">Adicionar ao carrinho</a>
+            </div>
+        </div>
+        {% endfor %}
+
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
