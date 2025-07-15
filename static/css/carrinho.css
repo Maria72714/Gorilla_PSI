@@ -11,12 +11,12 @@
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #f5f5f5;
-  padding: 20px;
   color: #333;
 }
 
 /* Título */
 h1 {
+  margin-top: 20px;
   font-family: 'Anton', sans-serif;
   font-size: 2rem;
   text-align: center;
@@ -66,4 +66,11 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.capro {
+  display:  flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
