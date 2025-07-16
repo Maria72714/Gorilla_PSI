@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Carrinho de Compras</title>
+{%extends 'base.html'%}
+
+{%block title%}
+    Carrinho
+{%endblock%}
+
+{% block conteudo%}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/carrinho.css') }}">
-</head>
+
 <body>
 
   <h1>Carrinho de Compras</h1>
@@ -18,13 +19,14 @@
         </li>
       {% endfor %}
     </ul>
-
-    <p><strong>Total: R${{ total }}</strong></p>
-  {% else %}
-    <p>Seu carrinho está vazio.</p>
-  {% endif %}
-
-  <p><a href="{{ url_for('produto') }}">← Voltar aos produtos</a></p>
-
+    <div class="capro">
+      <p><strong>Total: R${{ total }}</strong></p>
+      {% else %}
+        <p>Seu carrinho está vazio.</p>
+      {% endif %}
+      <p><a href="{{ url_for('produto') }}">← Voltar aos produtos</a></p>
+  </div>
 </body>
 </html>
+
+{%endblock%}
