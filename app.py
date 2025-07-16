@@ -100,7 +100,15 @@ def carrinho():
     # Passa lista de itens e total para o template
     return render_template('carrinho.html',carrinho=carrinho_produtos,total=total)
 
-
+@app.route('/remover',methods = ['POST','GET'])
+def remover():
+    produto_remover = int(request.form.get('produto'))
+    carrinho = session.get('carrinho', [])
+    if produto_remover in carrinho:
+        carrinho.remove(produto_remover)
+        session['carrinho'] = carrinho
+    return redirect(url_for('carrinho'))
+    
 
 if __name__ == '__main__': 
     app.run(debug=True)
