@@ -16,13 +16,14 @@
         <div class="main">
             <div class="logar">
                 <form action="{{ url_for('login') }}" method="POST">
-                    <label for="nome">Digite seu nome:</label>
-                    <input type="text" name="nome" id="nome" placeholder="Nome" required>
+                <label for="email">Email</label>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <label for="senha">Senha</label>
+                <!-- Campo senha -->
+                <input type="password" name="senha" placeholder="Senha" required><br>
+                <a href="{{url_for('cadastro')}}">Não tem cadastro? Cadastre-se aqui</a>
 
-                    <label for="senha">Digite sua senha:</label>
-                    <input type="password" name="senha" id="senha" placeholder="Senha" required>
-
-                    <button type="submit">Enviar</button>
+                <button type="submit">Enviar</button>
                 </form>
             </div>
         </div>
