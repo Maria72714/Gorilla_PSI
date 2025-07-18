@@ -1,6 +1,6 @@
-<!--Página dedicada a base da navbar-->
+<!-- Página dedicada à base da navbar -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,17 +14,34 @@
 <body>
     <header>
         <div class="logo">
-      <a href="{{ url_for('index') }}">GORILLA<span>.</span></a>
+            <a href="{{ url_for('index') }}">GORILLA<span>.</span></a>
         </div>
+
         <nav class="navbar">
+
             {% if request.endpoint != 'produto' %}
                 <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
             {% endif %}
             {% if request.endpoint != 'carrinho' %}
                 <a href="{{ url_for('carrinho') }}">Carrinho</a>
+
+            <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
+            <a href="{{ url_for('carrinho') }}">Carrinho</a>
+
+            {% if current_user.is_authenticated %}
+                <!-- Se o usuário estiver logado -->
+                <span class="user-logado">Olá, {{ current_user.nome }}!</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            {% else %}
+                <!-- Se o usuário não estiver logado -->
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('cadastro') }}">Cadastro</a>
+
             {% endif %}
         </nav>
 
     </header>
 
-<!--Colocar os botoes que devem aparecer,como se estiver logado ou não-->
+
+</body>
+</html>
