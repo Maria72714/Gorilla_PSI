@@ -1,11 +1,16 @@
-from flask import Flask, render_template, url_for, request, redirect, session, make_response 
+from flask import Flask, render_template, request, redirect, url_for, flash,session
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = 'uma-chave-secreta-segura'  # Chave usada para proteger sessões e cookies
 
-users = {}
-app.config['SECRET_KEY'] = 'chave_hiper_mega_secreta'
+login_manager = LoginManager(app)  # Inicializa o Flask-Login no app Flask
+login_manager.login_view = 'login'  # Define a rota de login para redirecionar usuários não autenticados
 
+# Banco de dados temporário em memória para armazenar usuários
+usuarios = {}
+#produtos, inicalmente esse será o modelo armazenado
 produtos = [
     {'id': 1, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'},
     {'id': 2, 'nome': 'Creatina - 800g', 'preco': 80, 'imagem': 'imagens/creatina.png'},
@@ -17,58 +22,99 @@ produtos = [
     {'id': 8, 'nome': 'Creatina - 1,2kg', 'preco': 100, 'imagem': 'imagens/creatina.png'},
     {'id': 9, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'}
 ]
+
+# Classe de usuário que o Flask-Login utiliza para gerenciar sessão
+class Usuario(UserMixin):
+    def __init__(self, id, nome, senha_hash):
+        self.id = id  # ID do usuário, usado internamente pelo Flask-Login
+        self.nome = nome  
+
+        self.senha_hash = senha_hash 
+
+@login_manager.user_loader
+def load_user(user_id):
+    dados = usuarios.get(user_id)  # Busca usuário no "banco" pelo ID
+    if dados:
+        return Usuario(dados['id'], dados['nome'], dados['senha_hash'])  # Cria objeto usuário para sessão
+    return None  # Retorna None se usuário não encontrado
+
+
 @app.route('/')
 def index():
-     if 'user_name' in session:
-        nome = session['user_name']
-        return render_template('index.html', nome=nome)
      return render_template('index.html', nome=None)
 
 @app.route('/cadastro', methods=['POST', 'GET'])
 def cadastro():
     if request.method == 'POST':
-        nome = request.form['nome']
-        senha = request.form['senha']
-     
-        if nome in users:
-            return render_template('cadastro.html', erro='usuario ja existe')
+        # Captura os dados do formulário de forma segura
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        nome = request.form.get('nome')
+       
+
+        # Verifica se algum campo está vazio
+        if not email or not nome or not senha:
         
+            return redirect(url_for('cadastro'))
+
+        # Verifica se o usuário já existe
+        if email in usuarios:
+            flash('Usuário já existe! Escolha outro email.')
+            return redirect(url_for('cadastro'))
+
+        # Gera hash seguro da senha
         senha_hash = generate_password_hash(senha)
-        users[nome] = senha_hash
-        return redirect(url_for('login') )
+
+        # Salva o usuário no "banco de dados" em memória
+        usuarios[email] = {
+            'id': email,
+            'nome': nome,
+            'senha_hash': senha_hash,
+           
+        }
+
     
-    return render_template('cadastro.html')
+        return redirect(url_for('login'))
+
+    return render_template('cadastro.html')  
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-     if request.method == 'POST':
-        nome = request.form['nome']
-        senha = request.form['senha']
-    
-        if nome in users and check_password_hash(users[nome], senha):
-            session['user_name'] = nome
-            response = make_response(redirect(url_for('produto')))
-            response.set_cookie('nome', nome, 7*24*60*60)
-            return response
-        else: 
-            return redirect(url_for('cadastro', user_name=session.get('user_name')))
-        
-    
-     return render_template('login.html')
+    if request.method == 'POST':
+        email = request.form.get('email')  # email do usuário do formulário
+        senha = request.form.get('senha')      # Senha digitada
+
+        dados = usuarios.get(email)  # Busca o usuário no "banco"
+
+        if dados and check_password_hash(dados['senha_hash'], senha):
+            user = Usuario(dados['id'], dados['nome'], dados['senha_hash'])# Cria objeto usuário
+            login_user(user)  # Realiza o login (cria sessão)
+            
+            return redirect(url_for('produto'))  # Redireciona após login
+
+      
+        return redirect(url_for('login'))
+
+    return render_template('login.html')  # Mostra formulário de login
+
 
 @app.route('/logout')
+@login_required
 def logout():
-    if session.get('user_name'):
-        session.clear()
-        return redirect(url_for('index'))
-    return redirect(url_for('index'))
+    logout_user()  # Remove sessão do usuário
+
+    return redirect(url_for('login'))  # Redireciona para a página de login
+
 
 @app.route('/produto')
+
 def produto():
-    nome = session.get('user_name')
-    return render_template('produto.html', produtos=produtos, user_name = nome)
+  
+    return render_template('produto.html', produtos=produtos)
+
 
 @app.route('/adicionar_ao_carrinho/<int:id_produto>')
+
 def adicionar_ao_carrinho(id_produto):
     carrinho = session.get('carrinho', [])
     carrinho.append(id_produto)
@@ -76,18 +122,19 @@ def adicionar_ao_carrinho(id_produto):
     return redirect(url_for('produto'))
 
 @app.route('/carrinho')
+
 def carrinho():
     carrinho_ids = session.get('carrinho', [])
-    # Conta quantas vezes cada ID aparece → quantidades por produto
+     # Conta quantas vezes cada ID aparece → quantidades por produto
     quantidades = {}
     for pid in carrinho_ids:
         quantidades[pid] = quantidades.get(pid, 0) + 1
 
     carrinho_produtos = []
     total = 0  
-
     # Para cada produto da loja, se estiver no carrinho, monta o item
     #'pid' representa o id do produto
+
     for produto in produtos:
         pid = produto['id']
         if pid in quantidades:
@@ -97,8 +144,7 @@ def carrinho():
             total += item['subtotal']            
             carrinho_produtos.append(item)
 
-    # Passa lista de itens e total para o template
-    return render_template('carrinho.html',carrinho=carrinho_produtos,total=total)
+    return render_template('carrinho.html', carrinho=carrinho_produtos, total=total)
 
 @app.route('/remover',methods = ['POST','GET'])
 def remover():
