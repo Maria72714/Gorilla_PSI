@@ -21,11 +21,16 @@
         <div class="main">
             <div class="logar">
                 <form action="{{ url_for('cadastro') }}" method="POST">
-                    <label for="nome">Digite seu nome:</label>
-                    <input type="text" name="nome" id="nome" placeholder="Nome" required>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" placeholder="Email" required><br>
 
-                    <label for="senha">Digite sua senha:</label>
-                    <input type="password" name="senha" id="senha" placeholder="Senha" required>
+                    <!-- Campo para o nome completo -->
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" placeholder="Nome completo" required><br>
+
+                    <!-- Campo para a senha -->
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" placeholder="Senha" required><br>
 
                     <button type="submit">Enviar</button>
                 </form>
