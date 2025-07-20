@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash,session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'uma-chave-secreta-segura'  # Chave usada para proteger sessões e cookies
@@ -9,7 +10,7 @@ login_manager = LoginManager(app)  # Inicializa o Flask-Login no app Flask
 login_manager.login_view = 'login'  # Define a rota de login para redirecionar usuários não autenticados
 
 # Banco de dados temporário em memória para armazenar usuários
-usuarios = {}
+database = 'banco.db'
 #produtos, inicalmente esse será o modelo armazenado
 produtos = [
     {'id': 1, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'},
@@ -23,6 +24,9 @@ produtos = [
     {'id': 9, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'}
 ]
 
+def conectar():
+    return sqlite3.connect(database)
+
 # Classe de usuário que o Flask-Login utiliza para gerenciar sessão
 class Usuario(UserMixin):
     def __init__(self, id, nome, senha_hash):
@@ -31,12 +35,12 @@ class Usuario(UserMixin):
 
         self.senha_hash = senha_hash 
 
-@login_manager.user_loader
+'''@login_manager.user_loader 
 def load_user(user_id):
-    dados = usuarios.get(user_id)  # Busca usuário no "banco" pelo ID
+    dados = usuarios.get(user_id)  # Busca usuário no "banco" pelo ID --> PRECISA CONSERTAR
     if dados:
         return Usuario(dados['id'], dados['nome'], dados['senha_hash'])  # Cria objeto usuário para sessão
-    return None  # Retorna None se usuário não encontrado
+    return None  # Retorna None se usuário não encontrado'''
 
 
 @app.route('/')
@@ -46,6 +50,8 @@ def index():
 @app.route('/cadastro', methods=['POST', 'GET'])
 def cadastro():
     if request.method == 'POST':
+        #conectar ao banco
+        db = conectar()
         # Captura os dados do formulário de forma segura
         email = request.form.get('email')
         senha = request.form.get('senha')
@@ -54,25 +60,24 @@ def cadastro():
 
         # Verifica se algum campo está vazio
         if not email or not nome or not senha:
-        
             return redirect(url_for('cadastro'))
 
         # Verifica se o usuário já existe
-        if email in usuarios:
-            flash('Usuário já existe! Escolha outro email.')
-            return redirect(url_for('cadastro'))
+        cursor = db.execute('SELECT * FROM usuarios WHERE nome = ?', (nome, ))
+        usuarios = cursor.fetchall()
+        for user in usuarios:
+            if email in user:
+                flash('Usuário já existe! Escolha outro email.')
+                return redirect(url_for('cadastro'))
 
         # Gera hash seguro da senha
         senha_hash = generate_password_hash(senha)
 
-        # Salva o usuário no "banco de dados" em memória
-        usuarios[email] = {
-            'id': email,
-            'nome': nome,
-            'senha_hash': senha_hash,
-           
-        }
-
+        # Salva o usuário no banco de dados
+        db.execute('INSERT INTO usuarios(nome, email, senha) VALUES(?)', (nome, email, senha_hash))
+        db.commit()
+        #fechar a conexão
+        db.close()
     
         return redirect(url_for('login'))
 
@@ -84,15 +89,20 @@ def login():
         email = request.form.get('email')  # email do usuário do formulário
         senha = request.form.get('senha')      # Senha digitada
 
-        dados = usuarios.get(email)  # Busca o usuário no "banco"
+        #conectar e fazer a consulta no banco
+        db = conectar() 
+        cursor = db.execute('SELECT * FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no "banco"
+        resultados = cursor.fetchall()
+        usuarios = [{'id': row[0], 'nome': row[1], 'email': row[2], 'senha': row[3]} for row in resultados] #lista de usuários
 
-        if dados and check_password_hash(dados['senha_hash'], senha):
-            user = Usuario(dados['id'], dados['nome'], dados['senha_hash'])# Cria objeto usuário
+        if resultados and check_password_hash(usuarios[0]['senha'], senha):
+            user = Usuario(usuarios[0]['id'], usuarios[0]['nome'], usuarios[0]['senha'])# Cria objeto usuário
             login_user(user)  # Realiza o login (cria sessão)
             
             return redirect(url_for('produto'))  # Redireciona após login
+        
+        db.close()
 
-      
         return redirect(url_for('login'))
 
     return render_template('login.html')  # Mostra formulário de login
