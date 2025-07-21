@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash,session
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
@@ -9,7 +9,7 @@ app.secret_key = 'uma-chave-secreta-segura'  # Chave usada para proteger sessõe
 login_manager = LoginManager(app)  # Inicializa o Flask-Login no app Flask
 login_manager.login_view = 'login'  # Define a rota de login para redirecionar usuários não autenticados
 
-# Banco de dados temporário em memória para armazenar usuários
+# Banco de dados para armazenar usuários
 database = 'banco.db'
 #produtos, inicalmente esse será o modelo armazenado
 produtos = [
@@ -24,6 +24,7 @@ produtos = [
     {'id': 9, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'}
 ]
 
+#Função para conectar ao banco
 def conectar():
     return sqlite3.connect(database)
 
@@ -32,15 +33,17 @@ class Usuario(UserMixin):
     def __init__(self, id, nome, senha_hash):
         self.id = id  # ID do usuário, usado internamente pelo Flask-Login
         self.nome = nome  
-
         self.senha_hash = senha_hash 
 
-'''@login_manager.user_loader 
+@login_manager.user_loader 
 def load_user(user_id):
-    dados = usuarios.get(user_id)  # Busca usuário no "banco" pelo ID --> PRECISA CONSERTAR
+    db = conectar()
+    cursor = db.execute('SELECT id, nome, senha FROM usuarios WHERE id = ?', (user_id, ))  # Busca usuário no banco pelo ID 
+    dados = cursor.fetchone()
+    db.close()
     if dados:
-        return Usuario(dados['id'], dados['nome'], dados['senha_hash'])  # Cria objeto usuário para sessão
-    return None  # Retorna None se usuário não encontrado'''
+        return Usuario(dados[0], dados[1], dados[2])  # Cria objeto usuário para sessão
+    return None  # Retorna None se usuário não encontrado
 
 
 @app.route('/')
@@ -63,18 +66,17 @@ def cadastro():
             return redirect(url_for('cadastro'))
 
         # Verifica se o usuário já existe
-        cursor = db.execute('SELECT * FROM usuarios WHERE nome = ?', (nome, ))
-        usuarios = cursor.fetchall()
-        for user in usuarios:
-            if email in user:
-                flash('Usuário já existe! Escolha outro email.')
-                return redirect(url_for('cadastro'))
+        cursor = db.execute('SELECT * FROM usuarios WHERE email = ?', (email, ))
+        user = cursor.fetchone()
+        if user:
+            flash('Usuário já existe! Escolha outro email.')
+            return redirect(url_for('cadastro'))
 
         # Gera hash seguro da senha
         senha_hash = generate_password_hash(senha)
 
         # Salva o usuário no banco de dados
-        db.execute('INSERT INTO usuarios(nome, email, senha) VALUES(?)', (nome, email, senha_hash))
+        db.execute('INSERT INTO usuarios(nome, email, senha) VALUES(?, ?, ?)', (nome, email, senha_hash))
         db.commit()
         #fechar a conexão
         db.close()
@@ -91,12 +93,12 @@ def login():
 
         #conectar e fazer a consulta no banco
         db = conectar() 
-        cursor = db.execute('SELECT * FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no "banco"
-        resultados = cursor.fetchall()
-        usuarios = [{'id': row[0], 'nome': row[1], 'email': row[2], 'senha': row[3]} for row in resultados] #lista de usuários
+        cursor = db.execute('SELECT id, nome, email, senha FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no banco
+        resultados = cursor.fetchone()
+        #usuarios = [{'id': row[0], 'nome': row[1], 'email': row[2], 'senha': row[3]} for row in resultados] #lista de usuários
 
-        if resultados and check_password_hash(usuarios[0]['senha'], senha):
-            user = Usuario(usuarios[0]['id'], usuarios[0]['nome'], usuarios[0]['senha'])# Cria objeto usuário
+        if resultados and check_password_hash(resultados[3], senha):
+            user = Usuario(resultados[0], resultados[1], resultados[3])# Cria objeto usuário
             login_user(user)  # Realiza o login (cria sessão)
             
             return redirect(url_for('produto'))  # Redireciona após login
