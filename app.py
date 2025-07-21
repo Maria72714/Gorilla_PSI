@@ -66,7 +66,7 @@ def cadastro():
             return redirect(url_for('cadastro'))
 
         # Verifica se o usuário já existe
-        cursor = db.execute('SELECT * FROM usuarios WHERE email = ?', (email, ))
+        cursor = db.execute('SELECT * FROM usuarios WHERE email = ?', (email,))
         user = cursor.fetchone()
         if user:
             flash('Usuário já existe! Escolha outro email.')
