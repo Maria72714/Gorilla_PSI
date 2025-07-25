@@ -27,7 +27,7 @@
 
             <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
             <a href="{{ url_for('carrinho') }}">Carrinho</a>
-
+            {% endif %}
             {% if current_user.is_authenticated %}
                 <!-- Se o usuário estiver logado -->
                 <span class="user-logado">Olá, {{ current_user.nome }}!</span>
