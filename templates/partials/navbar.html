@@ -19,26 +19,23 @@
 
         <nav class="navbar">
 
-            {% if request.endpoint != 'produto' %}
-                <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
-            {% endif %}
-            {% if request.endpoint != 'carrinho' %}
-                <a href="{{ url_for('carrinho') }}">Carrinho</a>
-
+        <nav class="navbar">
+        {% set pagina_atual = request.endpoint %}
+        {% if current_user.is_authenticated %}
+            
+            {% if pagina_atual != 'index' %}
             <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
             <a href="{{ url_for('carrinho') }}">Carrinho</a>
             {% endif %}
-            {% if current_user.is_authenticated %}
-                <!-- Se o usuário estiver logado -->
-                <span class="user-logado">Olá, {{ current_user.nome }}!</span>
-                <a href="{{ url_for('logout') }}">Sair</a>
-            {% else %}
-                <!-- Se o usuário não estiver logado -->
-                <a href="{{ url_for('login') }}">Login</a>
-                <a href="{{ url_for('cadastro') }}">Cadastro</a>
 
-            {% endif %}
-        </nav>
+            <a href="{{ url_for('logout') }}">Sair</a>
+        
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('cadastro') }}">Cadastro</a>
+        {% endif %}
+</nav>
+</nav>
 
     </header>
 
