@@ -18,7 +18,10 @@
     </main>
 
     <!-- Footer -->
-    {% include 'partials/footer.html' %}
+    <!-- Footer -->
+    {% block footer %}
+        {% include 'partials/footer.html' %}
+    {% endblock %}
 
 </body>
 </html>
