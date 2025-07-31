@@ -24,6 +24,18 @@ produtos = [
     {'id': 9, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'}
 ]
 
+
+produtos_ = [
+    ['Whey Protein - 1kg', 100],
+    ['Creatina - 800g', 80],
+    ['Pré-treino - 300g', 70],
+    ['Creatina - 1kg', 90],
+    ['Cafeína 200mg', 50],
+    ['Cafeína 400mg', 70],
+    ['Creatina - 1,2kg', 100],
+    ['Whey Protein - 1kg', 100]
+]
+
 #Função para conectar ao banco
 def conectar():
     return sqlite3.connect(database)
@@ -34,6 +46,17 @@ class Usuario(UserMixin):
         self.id = id  # ID do usuário, usado internamente pelo Flask-Login
         self.nome = nome  
         self.senha_hash = senha_hash 
+
+# Função para adicionar produtos ao banco de dados
+def adicionar_prod():
+    db = conectar()
+    cursor = db.execute('SELECT COUNT(*) FROM produtos')
+    if cursor.fetchone()[0] == 0:  # Se não houver produtos, adiciona os iniciais
+        for prod in produtos_:
+            cursor = db.execute ('INSERT INTO produtos(prod_nome, prod_valor) VALUES(?, ?)', (prod[0], prod[1])) 
+            db.commit()
+    db.close()
+adicionar_prod()  # Chama a função para adicionar produtos ao banco
 
 @login_manager.user_loader 
 def load_user(user_id):
