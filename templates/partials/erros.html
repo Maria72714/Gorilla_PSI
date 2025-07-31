@@ -1,0 +1,11 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/erros.css') }}">
+
+{% with errors = get_flashed_messages(category_filter=['error'])  %}
+        {% if errors %}
+        <div class="flash-erros">
+            {% for msg in errors %}
+                <spans class="flash-error">{{msg}}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}

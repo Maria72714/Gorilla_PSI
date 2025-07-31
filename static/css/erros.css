@@ -1,0 +1,19 @@
+.flash-errors {
+    margin: 20px auto;
+    max-width: 600px;
+    padding: 0;
+}
+
+.flash-error {
+    display: block;
+    background-color: #ffe0e0;
+    color: #8b0000;
+    border-left: 6px solid #d8000c;
+    padding: 15px 20px;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    margin-bottom: 10px;
+    position: relative;
+}
+

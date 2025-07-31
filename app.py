@@ -119,16 +119,16 @@ def login():
         cursor = db.execute('SELECT id, nome, email, senha FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no banco
         resultados = cursor.fetchone()
         #usuarios = [{'id': row[0], 'nome': row[1], 'email': row[2], 'senha': row[3]} for row in resultados] #lista de usuários
-
+        db.close()
         if resultados and check_password_hash(resultados[3], senha):
             user = Usuario(resultados[0], resultados[1], resultados[3])# Cria objeto usuário
             login_user(user)  # Realiza o login (cria sessão)
             
             return redirect(url_for('produto'))  # Redireciona após login
-        
-        db.close()
+        else:
+            flash('Senha ou email incorretos!', category = 'error')
+            return redirect(url_for('login'))
 
-        return redirect(url_for('login'))
 
     return render_template('login.html')  # Mostra formulário de login
 
