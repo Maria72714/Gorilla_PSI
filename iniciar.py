@@ -9,4 +9,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     senha VARCHAR(255) NOT NULL
 )
 ''')
+
+con.execute('''
+CREATE TABLE IF NOT EXISTS produtos (
+    prod_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prod_nome VARCHAR(255) NOT NULL,
+    prod_valor FLOAT NOT NULL
+)
+''')
 con.close()
