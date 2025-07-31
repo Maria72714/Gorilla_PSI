@@ -137,19 +137,15 @@ def login():
 @login_required
 def logout():
     logout_user()  # Remove sessão do usuário
-
     return redirect(url_for('login'))  # Redireciona para a página de login
 
 
 @app.route('/produto')
-
 def produto():
-  
     return render_template('produto.html', produtos=produtos)
 
 
 @app.route('/adicionar_ao_carrinho/<int:id_produto>')
-
 def adicionar_ao_carrinho(id_produto):
     carrinho = session.get('carrinho', [])
     carrinho.append(id_produto)
@@ -157,7 +153,6 @@ def adicionar_ao_carrinho(id_produto):
     return redirect(url_for('produto'))
 
 @app.route('/carrinho')
-
 def carrinho():
     carrinho_ids = session.get('carrinho', [])
      # Conta quantas vezes cada ID aparece → quantidades por produto
