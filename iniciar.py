@@ -33,5 +33,5 @@ CREATE TABLE IF NOT EXISTS carrinho (
         ON UPDATE CASCADE
 )  
 ''')
-
+                        
 con.close()
