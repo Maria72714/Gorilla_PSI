@@ -4,15 +4,14 @@
 {%block title%}
     Login
 {%endblock%}
-
 {% block conteudo%}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto&display=swap" rel="stylesheet">
 
 
          <p style="color:green; margin-top:50px; text-align:center;">Se a conta estar cadatrada, {{user_name}}! Agora é so logar! 👇 </p>
-   
     <div class="container">
+        {% include 'partials/erros.html' %}
         <div class="main">
             <div class="logar">
                 <form action="{{ url_for('login') }}" method="POST">

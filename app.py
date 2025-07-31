@@ -119,16 +119,16 @@ def login():
         cursor = db.execute('SELECT id, nome, email, senha FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no banco
         resultados = cursor.fetchone()
         #usuarios = [{'id': row[0], 'nome': row[1], 'email': row[2], 'senha': row[3]} for row in resultados] #lista de usuários
-
+        db.close()
         if resultados and check_password_hash(resultados[3], senha):
             user = Usuario(resultados[0], resultados[1], resultados[3])# Cria objeto usuário
             login_user(user)  # Realiza o login (cria sessão)
             
             return redirect(url_for('produto'))  # Redireciona após login
-        
-        db.close()
+        else:
+            flash('Senha ou email incorretos!', category = 'error')
+            return redirect(url_for('login'))
 
-        return redirect(url_for('login'))
 
     return render_template('login.html')  # Mostra formulário de login
 
@@ -137,19 +137,15 @@ def login():
 @login_required
 def logout():
     logout_user()  # Remove sessão do usuário
-
     return redirect(url_for('login'))  # Redireciona para a página de login
 
 
 @app.route('/produto')
-
 def produto():
-  
     return render_template('produto.html', produtos=produtos)
 
 
 @app.route('/adicionar_ao_carrinho/<int:id_produto>')
-
 def adicionar_ao_carrinho(id_produto):
     carrinho = session.get('carrinho', [])
     carrinho.append(id_produto)
@@ -157,7 +153,6 @@ def adicionar_ao_carrinho(id_produto):
     return redirect(url_for('produto'))
 
 @app.route('/carrinho')
-
 def carrinho():
     carrinho_ids = session.get('carrinho', [])
      # Conta quantas vezes cada ID aparece → quantidades por produto
