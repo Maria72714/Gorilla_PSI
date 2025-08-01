@@ -12,51 +12,59 @@ login_manager.login_view = 'login'  # Define a rota de login para redirecionar u
 # Banco de dados para armazenar usuários
 database = 'banco.db'
 #produtos, inicalmente esse será o modelo armazenado
-produtos = [
-    {'id': 1, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'},
-    {'id': 2, 'nome': 'Creatina - 800g', 'preco': 80, 'imagem': 'imagens/creatina.png'},
-    {'id': 3, 'nome': 'Pré-treino - 300g', 'preco': 70, 'imagem': 'imagens/pre_treino.png'},
-    {'id': 4, 'nome': 'Creatina - 1kg', 'preco': 90, 'imagem': 'imagens/creatina.png'},
-    {'id': 5, 'nome': 'Cafeína 200mg', 'preco': 50, 'imagem': 'imagens/cafeina.png'},
-    {'id': 6, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'},
-    {'id': 7, 'nome': 'Cafeína 400mg', 'preco': 70, 'imagem': 'imagens/cafeina.png'},
-    {'id': 8, 'nome': 'Creatina - 1,2kg', 'preco': 100, 'imagem': 'imagens/creatina.png'},
-    {'id': 9, 'nome': 'Whey Protein - 1kg', 'preco': 100, 'imagem': 'imagens/whey.png'}
+produtos_img = [
+    {'imagem': 'imagens/whey.png'},
+    {'imagem': 'imagens/creatina.png'},
+    {'imagem': 'imagens/pre_treino.png'},
+    {'imagem': 'imagens/creatina.png'},
+    {'imagem': 'imagens/cafeina.png'},
+    {'imagem': 'imagens/whey.png'},
+    {'imagem': 'imagens/cafeina.png'},
+    {'imagem': 'imagens/creatina.png'},
+    {'imagem': 'imagens/whey.png'}
 ]
 
 
-produtos_ = [
+produtos_db = [
     ['Whey Protein - 1kg', 100],
     ['Creatina - 800g', 80],
     ['Pré-treino - 300g', 70],
     ['Creatina - 1kg', 90],
     ['Cafeína 200mg', 50],
+    ['Whey Protein - 1kg', 100],
     ['Cafeína 400mg', 70],
     ['Creatina - 1,2kg', 100],
     ['Whey Protein - 1kg', 100]
-]
+] # Lista de produtos iniciais para popular o banco de dados
 
 #Função para conectar ao banco
 def conectar():
     return sqlite3.connect(database)
 
-# Classe de usuário que o Flask-Login utiliza para gerenciar sessão
+# Classe de usuário que o Flask-Login utiliza para gerenciar sessão11
 class Usuario(UserMixin):
     def __init__(self, id, nome, senha_hash):
         self.id = id  # ID do usuário, usado internamente pelo Flask-Login
         self.nome = nome  
-        self.senha_hash = senha_hash 
+        self.senha_hash = senha_hash
 
-# Função para adicionar produtos ao banco de dados
+# Função para adicionar produtos ao banco de dados (usada apenas na inicialização)
 def adicionar_prod():
     db = conectar()
     cursor = db.execute('SELECT COUNT(*) FROM produtos')
     if cursor.fetchone()[0] == 0:  # Se não houver produtos, adiciona os iniciais
-        for prod in produtos_:
+        for prod in produtos_db:
             cursor = db.execute ('INSERT INTO produtos(prod_nome, prod_valor) VALUES(?, ?)', (prod[0], prod[1])) 
             db.commit()
     db.close()
 adicionar_prod()  # Chama a função para adicionar produtos ao banco
+
+# Função para apagar os dados do carrinho do usuário
+def apagar_carrinho():
+    db = conectar()
+    db.execute('DELETE FROM carrinho WHERE user_id = ?', (current_user.id,))
+    db.commit() 
+    db.close()
 
 @login_manager.user_loader 
 def load_user(user_id):
@@ -67,7 +75,6 @@ def load_user(user_id):
     if dados:
         return Usuario(dados[0], dados[1], dados[2])  # Cria objeto usuário para sessão
     return None  # Retorna None se usuário não encontrado
-
 
 @app.route('/')
 def index():
@@ -98,7 +105,7 @@ def cadastro():
         # Gera hash seguro da senha
         senha_hash = generate_password_hash(senha)
 
-        # Salva o usuário no banco de dados
+        # Salva o usuário no banco de dados caso não exista
         db.execute('INSERT INTO usuarios(nome, email, senha) VALUES(?, ?, ?)', (nome, email, senha_hash))
         db.commit()
         #fechar a conexão
@@ -111,14 +118,13 @@ def cadastro():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')  # email do usuário do formulário
-        senha = request.form.get('senha')      # Senha digitada
+        email = request.form.get('email')  
+        senha = request.form.get('senha') 
 
         #conectar e fazer a consulta no banco
         db = conectar() 
         cursor = db.execute('SELECT id, nome, email, senha FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no banco
         resultados = cursor.fetchone()
-        #usuarios = [{'id': row[0], 'nome': row[1], 'email': row[2], 'senha': row[3]} for row in resultados] #lista de usuários
         db.close()
         if resultados and check_password_hash(resultados[3], senha):
             user = Usuario(resultados[0], resultados[1], resultados[3])# Cria objeto usuário
@@ -132,59 +138,72 @@ def login():
 
     return render_template('login.html')  # Mostra formulário de login
 
-
-@app.route('/logout')
+@app.route('/logout')   
 @login_required
 def logout():
     logout_user()  # Remove sessão do usuário
+    apagar_carrinho()  # Limpa o carrinho do usuário ao fazer logout
     return redirect(url_for('login'))  # Redireciona para a página de login
-
 
 @app.route('/produto')
 def produto():
+    db = conectar()
+    cursor = db.execute('SELECT prod_id, prod_nome, prod_valor FROM produtos')  # Consulta os produtos no banco
+    resultado = cursor.fetchall()
+    produtos = []
+    for item in resultado:
+        produtos.append({
+            'id': item[0],
+            'nome': item[1],
+            'preco': item[2],
+            'imagem': produtos_img[item[0] - 1]['imagem']  # Associa a imagem ao produto
+        })
     return render_template('produto.html', produtos=produtos)
 
-
-@app.route('/adicionar_ao_carrinho/<int:id_produto>')
+@app.route('/adicionar_ao_carrinho/<int:id_produto>') 
 def adicionar_ao_carrinho(id_produto):
-    carrinho = session.get('carrinho', [])
-    carrinho.append(id_produto)
-    session['carrinho'] = carrinho
-    return redirect(url_for('produto'))
+    db = conectar()
+    cursor = db.execute('SELECT COUNT(*) FROM carrinho WHERE prod_id = ? AND user_id = ?', (id_produto, current_user.id))
+
+    if cursor.fetchone():  # Verifica se o produto existe
+        cursor = db.execute('UPDATE carrinho SET quantidade = quantidade + 1 WHERE prod_id = ? and user_id = ?', (id_produto, current_user.id))
+    cursor.execute('INSERT INTO carrinho (user_id, prod_id) VALUES (?, ?)', (current_user.id, id_produto))
+
+    db.commit()
+    db.close()
+    return redirect(url_for('produto'))  
 
 @app.route('/carrinho')
 def carrinho():
-    carrinho_ids = session.get('carrinho', [])
-     # Conta quantas vezes cada ID aparece → quantidades por produto
-    quantidades = {}
-    for pid in carrinho_ids:
-        quantidades[pid] = quantidades.get(pid, 0) + 1
-
-    carrinho_produtos = []
-    total = 0  
-    # Para cada produto da loja, se estiver no carrinho, monta o item
-    #'pid' representa o id do produto
-
-    for produto in produtos:
-        pid = produto['id']
-        if pid in quantidades:
-            item = produto.copy()
-            item['quantidade'] = quantidades[pid]
-            item['subtotal'] = produto['preco'] * quantidades[pid]
-            total += item['subtotal']            
-            carrinho_produtos.append(item)
-
+    db = conectar()
+    cursor = db.execute('''
+        SELECT p.prod_nome, p.prod_valor, c.quantidade
+        FROM carrinho AS c
+        INNER JOIN produtos AS p
+        ON c.prod_id = p.prod_id
+    ''')
+    carrinho_produtos = []  # Obtém os produtos do carrinho
+    for produto in cursor.fetchall():
+        carrinho_produtos.append({
+            'nome': produto[0],
+            'preco': produto[1],
+            'quantidade': produto[2],
+            'subtotal': produto[1] * produto[2]  # Calcula o subtotal
+        })
+    total = sum(produto['preco'] * produto['quantidade'] for produto in carrinho_produtos)
     return render_template('carrinho.html', carrinho=carrinho_produtos, total=total)
 
-@app.route('/remover',methods = ['POST','GET'])
+@app.route('/remover', methods = ['POST','GET'])
 def remover():
-    produto_remover = int(request.form.get('produto'))
-    carrinho = session.get('carrinho', [])
-    if produto_remover in carrinho:
-        carrinho.remove(produto_remover)
-        session['carrinho'] = carrinho
+    produto_remover = request.form.get('produto')
+    db = conectar()
+    cursor = db.execute('SELECT prod_id FROM carrinho WHERE prod_id = ? AND user_id = ?', (produto_remover, current_user.id))
+    resultado = cursor.fetchone()
+    if resultado:
+        db.execute('UPDATE carrinho SET quantidade = quantidade - 1 WHERE prod_id = ? AND user_id = ?', (produto_remover, current_user.id))
+        db.commit()
+        db.close()
     return redirect(url_for('carrinho'))
     
-
 if __name__ == '__main__': 
     app.run(debug=True)
