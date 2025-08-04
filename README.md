@@ -8,7 +8,7 @@ Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de
 
 > Organização atual dos arquivos e diretórios do projeto:
 
-- `app/` – Arquivos Python principais (rotas, lógica da aplicação Flask)
+- `app.py` – Arquivos Python principais (rotas, lógica da aplicação Flask)
 - `templates/` – Arquivos HTML com templates Jinja2
 - `static/` – Arquivos estáticos (CSS e imagens)
 - `requirements.txt` – Lista de dependências do projeto Python
@@ -20,19 +20,19 @@ Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de
 
 ### 🧑‍💻 Eduardo
 - Estruturação do projeto Flask
-- 
+- CRUD
 
 ### 🧑‍💻 José Abílio
-- 
-- 
+- Estilização do cadastro
+- Funcionalidades do sistema
 
 ### 🧑‍💻 Lucas
 - Integração com o banco
-- 
 
 ### 🧑‍💻 Maria Luiza
 - Parte da Estruturação do Back-end e Front-End
 - Tratamento de Erros
+- CRUD
 
 
 ---
