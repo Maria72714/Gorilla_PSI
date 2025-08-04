@@ -15,7 +15,7 @@
     <ul>
       {% for item in carrinho %}
         <li>
-          {{ item[0] }} — R${{ item.preco }} x {{ item.quantidade }} = R${{ item.subtotal }}
+          {{ item.nome }} — R${{ item.preco }} x {{ item.quantidade }} = R${{ item.subtotal }}
           <form action="{{ url_for('remover') }}" method="post">
             <input type="hidden" name="produto" value="{{ item.id }}">
             <button type="submit">Remover</button>

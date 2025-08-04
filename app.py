@@ -11,7 +11,7 @@ login_manager.login_view = 'login'  # Define a rota de login para redirecionar u
 
 # Banco de dados para armazenar usuários
 database = 'banco.db'
-#produtos, inicalmente esse será o modelo armazenado
+# rotas para as imagens dos produtos
 produtos_img = [
     {'imagem': 'imagens/whey.png'},
     {'imagem': 'imagens/creatina.png'},
@@ -142,7 +142,7 @@ def login():
 @login_required
 def logout():
     logout_user()  # Remove sessão do usuário
-    apagar_carrinho()  # Limpa o carrinho do usuário ao fazer logout
+    #apagar_carrinho()  # Limpa o carrinho do usuário ao fazer logout
     return redirect(url_for('login'))  # Redireciona para a página de login
 
 @app.route('/produto')
@@ -163,13 +163,14 @@ def produto():
 @app.route('/adicionar_ao_carrinho/<int:id_produto>') 
 def adicionar_ao_carrinho(id_produto):
     db = conectar()
-    cursor = db.execute('SELECT COUNT(*) FROM carrinho WHERE prod_id = ? AND user_id = ?', (id_produto, current_user.id))
+    cursor = db.execute('SELECT * FROM carrinho WHERE prod_id = ? AND user_id = ?', (id_produto, current_user.id))
 
     if cursor.fetchone():  # Verifica se o produto existe
         cursor = db.execute('UPDATE carrinho SET quantidade = quantidade + 1 WHERE prod_id = ? and user_id = ?', (id_produto, current_user.id))
-    cursor.execute('INSERT INTO carrinho (user_id, prod_id) VALUES (?, ?)', (current_user.id, id_produto))
-
-    db.commit()
+        db.commit()
+    else:
+        cursor = db.execute('INSERT INTO carrinho (user_id, prod_id) VALUES (?, ?)', (current_user.id, id_produto))
+        db.commit()
     db.close()
     return redirect(url_for('produto'))  
 
@@ -177,19 +178,23 @@ def adicionar_ao_carrinho(id_produto):
 def carrinho():
     db = conectar()
     cursor = db.execute('''
-        SELECT p.prod_nome, p.prod_valor, c.quantidade
+        SELECT p.prod_id, p.prod_nome, p.prod_valor, c.quantidade
         FROM carrinho AS c
         INNER JOIN produtos AS p
         ON c.prod_id = p.prod_id
-    ''')
-    carrinho_produtos = []  # Obtém os produtos do carrinho
-    for produto in cursor.fetchall():
-        carrinho_produtos.append({
-            'nome': produto[0],
-            'preco': produto[1],
-            'quantidade': produto[2],
-            'subtotal': produto[1] * produto[2]  # Calcula o subtotal
-        })
+        WHERE c.user_id = ?
+    ''', (current_user.id,))
+    resultado = cursor.fetchall()
+    carrinho_produtos = []  # Lista para armazenar os detalhes do produto 
+    if resultado:
+        for produto in resultado:
+            carrinho_produtos.append({
+                'id': produto[0],
+                'nome': produto[1],
+                'preco': produto[2],
+                'quantidade': produto[3],
+                'subtotal': produto[2] * produto[3]  # Calcula o subtotal
+            })
     total = sum(produto['preco'] * produto['quantidade'] for produto in carrinho_produtos)
     return render_template('carrinho.html', carrinho=carrinho_produtos, total=total)
 
@@ -197,13 +202,29 @@ def carrinho():
 def remover():
     produto_remover = request.form.get('produto')
     db = conectar()
-    cursor = db.execute('SELECT prod_id FROM carrinho WHERE prod_id = ? AND user_id = ?', (produto_remover, current_user.id))
+    cursor = db.execute('''
+        SELECT p.prod_nome, p.prod_valor, c.quantidade
+        FROM carrinho AS c
+        INNER JOIN produtos AS p
+        ON c.prod_id = p.prod_id
+        WHERE c.user_id = ?
+    ''', (current_user.id,))
     resultado = cursor.fetchone()
     if resultado:
-        db.execute('UPDATE carrinho SET quantidade = quantidade - 1 WHERE prod_id = ? AND user_id = ?', (produto_remover, current_user.id))
+        if resultado[2] < 1:
+            db.execute('DELETE FROM carrinho WHERE prod_id = ? AND user_id = ?', (produto_remover, current_user.id))
+        else:
+            db.execute('UPDATE carrinho SET quantidade = quantidade - 1 WHERE prod_id = ? AND user_id = ?', (produto_remover, current_user.id))
         db.commit()
         db.close()
     return redirect(url_for('carrinho'))
+
+@app.route('/limpar_carrinho') #--> CRIAR BOTÃO PARA ESSA ROTA
+def limpar_carrinho():
+    '''db = conectar()
+    db.execute('DELETE FROM carrinho WHERE user_id = ?', (current_user.id))
+    db.commit()
+    db.close()'''
     
 if __name__ == '__main__': 
     app.run(debug=True)

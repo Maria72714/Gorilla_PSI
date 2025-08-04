@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS produtos (
 ''')
 
 con.execute('''
+DROP TABLE carrinho
+''')
+
+con.execute('''
 CREATE TABLE IF NOT EXISTS carrinho (
     car_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
@@ -33,5 +37,9 @@ CREATE TABLE IF NOT EXISTS carrinho (
         ON UPDATE CASCADE
 )  
 ''')
-                        
+
+con.execute('''
+ALTER TABLE carrinho
+ADD COLUMN quantidade INTEGER DEFAULT 1
+''')                        
 con.close()
