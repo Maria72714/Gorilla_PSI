@@ -161,6 +161,7 @@ def produto():
     return render_template('produto.html', produtos=produtos)
 
 @app.route('/adicionar_ao_carrinho/<int:id_produto>') 
+@login_required
 def adicionar_ao_carrinho(id_produto):
     db = conectar()
     cursor = db.execute('SELECT * FROM carrinho WHERE prod_id = ? AND user_id = ?', (id_produto, current_user.id))
@@ -219,12 +220,10 @@ def remover():
         db.close()
     return redirect(url_for('carrinho'))
 
-@app.route('/limpar_carrinho') #--> CRIAR BOTÃO PARA ESSA ROTA
+@app.route('/limpar_carrinho')
 def limpar_carrinho():
-    '''db = conectar()
-    db.execute('DELETE FROM carrinho WHERE user_id = ?', (current_user.id))
-    db.commit()
-    db.close()'''
+    apagar_carrinho()
+    return redirect(url_for('carrinho'))
     
 if __name__ == '__main__': 
     app.run(debug=True)
