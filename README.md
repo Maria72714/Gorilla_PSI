@@ -23,8 +23,8 @@ Repositório destinado ao **Projeto Gorilla**, desenvolvido para a disciplina de
 - 
 
 ### 🧑‍💻 José Abílio
-- 
-- 
+- Front-End
+- implementação de funcionalidades Back-End
 
 ### 🧑‍💻 Lucas
 - Integração com o banco
