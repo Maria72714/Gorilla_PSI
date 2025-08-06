@@ -22,6 +22,9 @@
           </form>
         </li>
       {% endfor %}
+      <form action="{{ url_for('limpar_carrinho') }}">
+        <input type="submit" value="Limpar carrinho">
+      </form>
     </ul>
     <div class="capro">
       <p><strong>Total: R${{ total }}</strong></p>

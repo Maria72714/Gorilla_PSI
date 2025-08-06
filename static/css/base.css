@@ -18,6 +18,14 @@ header {
     background-color: #121212;
 }
 
+.navbar > h3 {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
 .logo a{
     font-family: 'Anton', sans-serif;
     text-decoration: none;
