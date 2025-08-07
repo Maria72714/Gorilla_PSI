@@ -224,6 +224,17 @@ def remover():
 def limpar_carrinho():
     apagar_carrinho()
     return redirect(url_for('carrinho'))
-    
+
+#Tratamento dos erros das páginas 404 e 500
+@app.errorhandler(404)
+def erro_404(e):
+    return render_template('erros/404.html'), 404
+
+@app.errorhandler(500)
+def erro_500(e):
+    return render_template('erros/500.html'), 500
+
+
+
 if __name__ == '__main__': 
     app.run(debug=True)
