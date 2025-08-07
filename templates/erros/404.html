@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Página não encontrada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/erros_pag.css') }}">
+</head>
+<body>
+    <div class="erro">
+        <h1>ERRO 404</h1>
+        <h2>DESCULPE</h1>
+        <p>Não conseguimos encontrar essa página</p>
+         <a href="{{url_for('index')}}">Voltar para a página inicial</a>
+        <img src="/static/imagens/gorila_erro.png" alt="">
+       
+        
+        
+        
+    </div>
+</body>
+</html>
