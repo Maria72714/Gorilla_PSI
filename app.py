@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
@@ -78,7 +78,8 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-     return render_template('index.html', nome=None)
+    nome_usuario = request.cookies.get('nome_usuario')
+    return render_template('index.html', nome=nome_usuario)
 
 @app.route('/cadastro', methods=['POST', 'GET'])
 def cadastro():
@@ -121,22 +122,23 @@ def login():
         email = request.form.get('email')  
         senha = request.form.get('senha') 
 
-        #conectar e fazer a consulta no banco
         db = conectar() 
-        cursor = db.execute('SELECT id, nome, email, senha FROM usuarios WHERE email = ?', (email, )) # Busca o usuário no banco
+        cursor = db.execute('SELECT id, nome, email, senha FROM usuarios WHERE email = ?', (email, )) 
         resultados = cursor.fetchone()
         db.close()
         if resultados and check_password_hash(resultados[3], senha):
-            user = Usuario(resultados[0], resultados[1], resultados[3])# Cria objeto usuário
-            login_user(user)  # Realiza o login (cria sessão)
+            user = Usuario(resultados[0], resultados[1], resultados[3])
+            login_user(user)
             
-            return redirect(url_for('produto'))  # Redireciona após login
+            resp = make_response(redirect(url_for('produto')))
+            # Define um cookie chamado 'nome_usuario' que dura 7 dias
+            resp.set_cookie('nome_usuario', resultados[1], max_age=7*24*60*60)  
+            return resp
         else:
             flash('Senha ou email incorretos!', category = 'error')
             return redirect(url_for('login'))
 
-
-    return render_template('login.html')  # Mostra formulário de login
+    return render_template('login.html')
 
 @app.route('/logout')   
 @login_required
