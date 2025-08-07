@@ -21,7 +21,7 @@
         <nav class="navbar">
         {% set pagina_atual = request.endpoint %}
         {% if current_user.is_authenticated %}
-            <h3>Olá {{ current_user.nome }}</h3>
+            <h3>Olá, {{ current_user.nome }}!</h3>
             {% if pagina_atual != 'index' %}
             <a href="{{ url_for('produto') }}" id="produto">Produtos</a>
             <a href="{{ url_for('carrinho') }}">Carrinho</a>
