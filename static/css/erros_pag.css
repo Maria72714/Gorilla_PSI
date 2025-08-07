@@ -1,0 +1,32 @@
+
+body{
+    overflow-y: hidden;
+}
+.erro{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+   
+}
+img{
+    
+    width: 300px;   
+    height: auto;
+    margin-top: 20px;
+}
+h1{
+    font-size: 50px;
+    color: red;
+}
+p{
+    font-size: 20px;
+}
+a{
+    text-decoration: none;
+    color: #84cc16;
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 20px;
+}
